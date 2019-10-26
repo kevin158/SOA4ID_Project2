@@ -1,0 +1,68 @@
+###### iniciar sqlite  ############
+cd C:\Users\Usuario\Desktop\db
+sqlite3 mydb.db
+.mode column
+.headers on
+
+
+create table sucursales (nombre text primary key);
+create table clientes (cedula INT primary key, nombre text);
+create table compras (ID INT primary key, fecha text, cedulaCliente INT, foreign key(cedulaCliente) references clientes(ID));
+create table productos (ID INT primary key, nombre text, nombreSucursal text, foreign key(nombreSucursal) references sucursales(nombre));
+create table detalles (IDCompra INT, IDProducto INT, cantidad INT, foreign key(IDCompra) references compras(ID), foreign key(IDProducto) references productos(ID));
+
+######### CRUD clientes  #############
+insert into clientes (cedula, nombre) values (, '');
+select * from clientes as c where c.nombre='';
+update clientes set cedula= where cedula=;
+delete from clientes where cedula=;
+
+######### CRUD sucursales  #############
+insert into sucursales (nombre) values ('');
+select * from sucursales as s where s.nombre=;
+update sucursales set nombre='' where nombre='';
+delete from sucursales where nombre=;
+
+######### CRUD compras  #############
+insert into compras (ID, fecha, cedulaCliente) values (, '', );
+select * from compras as co where co.ID=;
+update compras set ID= where ID=;
+delete from compras where ID=;
+
+######### CRUD productos  #############
+insert into productos (ID, nombre, nombreSucursal) values (, '', '');
+select * from productos as p where p.ID=;
+update productos set ID= where ID=;
+delete from productos where ID=;
+
+######### CRUD detalles  #############
+insert into detalles (IDCompra, IDProducto, cantidad) values (, , );
+select * from detalles as d where d.IDCompra=;
+update detalles set IDCompra= where IDCompra=;
+delete from detalles where IDCompra=;
+
+
+######## consultas  ########### 
+
+select c.nombre, d.cantidad, p.nombre from clientes c inner join compras co on c.cedula=co.cedulaCliente inner join detalles d on co.ID=d.IDCompra inner join productos p on d.IDProducto=p.ID;
+
+######## Obtener ventas por día y mes en una sucursal en específico ########
+select c.fecha, s.nombre from compras as c inner join detalles as d on c.ID=d.IDCompra inner join productos as p on d.IDProducto=p.ID inner join sucursales as s on p.nombreSucursal=s.nombre where s.nombre='Tambee' order by strftime('%m-%d', c.fecha);
+
+######## Obtener ventas por año en una sucursal en específico ########
+select c.fecha, s.nombre, d.cantidad, p.nombre from compras as c inner join detalles as d on c.ID=d.IDCompra inner join productos as p on d.IDProducto=p.ID inner join sucursales as s on p.nombreSucursal=s.nombre where s.nombre='Tambee' order by strftime('%Y', c.fecha);
+
+######## Obtener los clientes por cantidad de productos consumidos ########
+select c.nombre, sum(d.cantidad) from clientes as c inner join compras as co on c.cedula=co.cedulaCliente inner join detalles as d on co.ID=d.IDCompra group by c.nombre order by sum(d.cantidad) DESC;
+
+######## Obtener el cliente con mayor cantidad de productos consumidos ########
+select nombreCliente, max(sumatoria) from (select sum(d.cantidad) as sumatoria, c.nombre as nombreCliente from clientes as c inner join compras as co on c.cedula=co.cedulaCliente inner join detalles as d on co.ID=d.IDCompra group by c.nombre order by sum(d.cantidad) DESC);
+
+######## Obtener los primeros 5 clientes con mayor cantidad de productos consumidos ########
+select c.nombre, sum(d.cantidad) from clientes as c inner join compras as co on c.cedula=co.cedulaCliente inner join detalles as d on co.ID=d.IDCompra group by c.nombre order by sum(d.cantidad) DESC limit 5;
+
+######## Obtener clientes con la cantidad de productos consumidos en un periodo de tiempo ########
+select c.nombre, sum(d.cantidad) from clientes as c inner join compras as co on c.cedula=co.cedulaCliente inner join detalles as d on co.ID=d.IDCompra where co.fecha>='2019-01-01'and co.fecha<='2019-10-01' group by c.nombre order by sum(d.cantidad);
+
+
+

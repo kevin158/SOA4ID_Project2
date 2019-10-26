@@ -1,0 +1,45 @@
+MATCH (n)
+DETACH DELETE n
+
+###### obtener sucursales
+
+MATCH (s:Sucursal)
+RETURN s
+
+###### obtener productos
+
+MATCH (p:Producto)
+RETURN p
+
+###### obtener servicios
+
+MATCH (s:Servicio)
+RETURN s
+
+###### obtener agenda
+
+MATCH (a:Agenda)
+RETURN a
+
+###### obtener servicios por sucursal
+MATCH servicios=()-[:Ofrece]-() 
+RETURN servicios
+
+###### obtener agenda de una sucursal
+MATCH agenda=()-[:Tiene]-()
+RETURN agenda
+
+###### obtener productos de una sucursal
+MATCH productos=()-[:Sirve]-() 
+ RETURN productos
+
+###### obtener reservaciones del 2019 por sucursal
+MATCH o=(s:Sucursal)-[:Tiene]->(a:Agenda)
+ WHERE a.estado="Reservado" and a.horario.year=2019 
+ RETURN o
+
+###### obtener cantidad de productos vendidos por sucursal
+MATCH (p:Producto)
+ WHERE p.nombre="Ensalada de kiwi y gambas"
+ SET p.cantidadVendida=1
+ RETURN p.nombre
